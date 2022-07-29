@@ -11,7 +11,10 @@
 ```
 
 2. Add the dependency
-```implementation 'com.github.amjadrad:TildaSlider:0.0.1' ```
+```
+...
+implementation 'com.github.amjadrad:TildaSlider:0.0.1'
+```
 
 3. in xml file
 ```<ir.tildaweb.tilda_slider.views.TildaSlider
