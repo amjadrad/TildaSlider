@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ir.tildaweb.tilda_slider.views.TildaSlider
+        android:id="@+id/slider"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        app:defaultIndicator="square"
+        app:hideIndicators="true"
+        app:imageSlideInterval="5000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:loopSlides="true" />
+
+</LinearLayout>
