@@ -2,7 +2,8 @@
 
 1. Add this line in your root build.gradle at the end of repositories:
 
-```	allprojects {
+```
+allprojects {
 		repositories {
 			...
 			maven { url 'https://jitpack.io' }
@@ -17,7 +18,8 @@ implementation 'com.github.amjadrad:TildaSlider:0.0.1'
 ```
 
 3. in xml file
-```<ir.tildaweb.tilda_slider.views.TildaSlider
+```
+<ir.tildaweb.tilda_slider.views.TildaSlider
         android:id="@+id/slider"
         android:layout_width="match_parent"
         android:layout_height="280dp"
@@ -29,7 +31,8 @@ implementation 'com.github.amjadrad:TildaSlider:0.0.1'
  ```
 
 4. in java file
-```TildaSlider tildaSlider = findViewById(R.id.slider);
+```
+TildaSlider tildaSlider = findViewById(R.id.slider);
         List<Poster> posterList = new ArrayList<>();
         posterList.add(new RemoteImage("https://example.com/1.jpg"));
         posterList.add(new RemoteVideo(Uri.parse("https://example.com/a.mp4")));
