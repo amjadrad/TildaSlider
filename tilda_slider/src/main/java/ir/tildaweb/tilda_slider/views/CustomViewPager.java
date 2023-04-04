@@ -9,10 +9,16 @@ public class CustomViewPager extends ViewPager {
 
     private boolean mustWrapContent=true;
 
+    public CustomViewPager(Context context) {
+        super(context);
+    }
+
     public CustomViewPager(Context context, boolean mustWrapContent) {
         super(context);
         this.mustWrapContent=mustWrapContent;
     }
+
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

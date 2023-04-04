@@ -1,13 +1,18 @@
 package ir.tildaweb.tilda_slider.views.fragments;
 
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -27,8 +32,11 @@ import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
+import ir.tildaweb.tilda_slider.MathUtils;
 import ir.tildaweb.tilda_slider.events.IVideoPlayListener;
 import ir.tildaweb.tilda_slider.events.OnPosterClickListener;
 import ir.tildaweb.tilda_slider.posters.BitmapImage;
@@ -44,6 +52,7 @@ import ir.tildaweb.tilda_slider.views.TildaSlider;
 
 public class PosterFragment extends Fragment implements Player.Listener {
 
+    private final String TAG = this.getClass().getName();
     private Poster poster;
 
     private IVideoPlayListener videoPlayListener;
@@ -98,7 +107,48 @@ public class PosterFragment extends Fragment implements Player.Listener {
                 } else {
                     final RemoteImage image = (RemoteImage) imagePoster;
                     if (image.getErrorDrawable() == null && image.getPlaceHolder() == null) {
-                        Glide.with(getActivity()).load(image.getUrl()).into(imageView);
+                        Glide.with(getActivity()).load(image.getUrl())
+                                .into(new CustomTarget<Drawable>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                        resource.getIntrinsicWidth();
+                                        Log.d(TAG, "onResourceReady:WWW " + resource.getIntrinsicWidth());
+                                        Log.d(TAG, "onResourceReady:WWW " + resource.getIntrinsicHeight());
+
+                                        int imageW = resource.getIntrinsicWidth();
+                                        int imageH = resource.getIntrinsicHeight();
+                                        float imageRatio = imageH / (float) imageW;
+                                        int w = MathUtils.getScreenWidth(getActivity());
+                                        int y = MathUtils.convertDipToPixels(getActivity(), w * imageRatio);
+                                        Log.d(TAG, "onResourceReady: " + w);
+                                        Log.d(TAG, "onResourceReady: " + y);
+                                        ViewPager.LayoutParams layoutParams = new ViewPager.LayoutParams();
+                                        layoutParams.height = y;
+                                        layoutParams.width = w;
+                                        imageView.setLayoutParams(layoutParams);
+                                        imageView.setAdjustViewBounds(true);
+                                        imageView.setImageDrawable(resource);
+
+                                    }
+
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                                    }
+                                });
+//                                .into(new CustomTarget<Bitmap>() {
+//                                    @Override
+//                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+////                                        int width = resource.getWidth();
+////                                        int height = resource.getHeight();
+////                                        imageView.setImageBitmap(resource);
+//                                    }
+//
+//                                    @Override
+//                                    public void onLoadCleared(@Nullable Drawable placeholder) {
+//                                    }
+//                                });
+
                     } else {
                         if (image.getPlaceHolder() != null && image.getErrorDrawable() != null) {
                             Glide.with(getActivity())

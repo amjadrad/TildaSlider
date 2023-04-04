@@ -132,37 +132,34 @@ public class TildaSlider extends FrameLayout implements ViewPager.OnPageChangeLi
 
     private void setup() {
         if (!isInEditMode()) {
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    if (getContext() instanceof AppCompatActivity) {
-                        hostActivity = (AppCompatActivity) getContext();
-                    } else {
-                        throw new RuntimeException("Host activity must extend AppCompatActivity");
-                    }
-                    boolean mustMakeViewPagerWrapContent = getLayoutParams().height == ViewGroup.LayoutParams.WRAP_CONTENT;
-
-                    viewPager = new CustomViewPager(getContext(), mustMakeViewPagerWrapContent);
-                    viewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        viewPager.setId(View.generateViewId());
-                    } else {
-                        int id = Math.abs(new Random().nextInt((5000 - 1000) + 1) + 1000);
-                        viewPager.setId(id);
-                    }
-                    viewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                    viewPager.addOnPageChangeListener(TildaSlider.this);
-                    addView(viewPager);
-                    slideIndicatorsGroup = new SlideIndicatorsGroup(getContext(), selectedSlideIndicator, unSelectedSlideIndicator, defaultIndicator, indicatorSize, mustAnimateIndicators);
-                    if (!hideIndicators) {
-                        addView(slideIndicatorsGroup);
-                    }
-
-                    setupTimer();
-                    setupIsCalled = true;
-                    renderRemainingPosters();
+            post(() -> {
+                if (getContext() instanceof AppCompatActivity) {
+                    hostActivity = (AppCompatActivity) getContext();
+                } else {
+                    throw new RuntimeException("Host activity must extend AppCompatActivity");
                 }
+                boolean mustMakeViewPagerWrapContent = getLayoutParams().height == ViewGroup.LayoutParams.WRAP_CONTENT;
+
+                viewPager = new CustomViewPager(getContext(), mustMakeViewPagerWrapContent);
+//                viewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    viewPager.setId(View.generateViewId());
+                } else {
+                    int id = Math.abs(new Random().nextInt((5000 - 1000) + 1) + 1000);
+                    viewPager.setId(id);
+                }
+                viewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                viewPager.addOnPageChangeListener(TildaSlider.this);
+                addView(viewPager);
+                slideIndicatorsGroup = new SlideIndicatorsGroup(getContext(), selectedSlideIndicator, unSelectedSlideIndicator, defaultIndicator, indicatorSize, mustAnimateIndicators);
+                if (!hideIndicators) {
+                    addView(slideIndicatorsGroup);
+                }
+
+                setupTimer();
+                setupIsCalled = true;
+                renderRemainingPosters();
             });
         }
 
