@@ -1,12 +1,14 @@
 package ir.tildaweb.tilda_slider.views;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 
 import androidx.viewpager.widget.ViewPager;
 
 public class CustomViewPager extends ViewPager {
 
+    private final String TAG = this.getClass().getName();
     private boolean mustWrapContent=true;
 
     public CustomViewPager(Context context) {
@@ -29,8 +31,8 @@ public class CustomViewPager extends ViewPager {
                 child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
                 int h = child.getMeasuredHeight();
                 if (h > height) height = h;
+                Log.d(TAG, "onMeasure: " + h);
             }
-
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);

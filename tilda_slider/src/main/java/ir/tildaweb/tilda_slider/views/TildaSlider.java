@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +21,6 @@ import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -99,7 +97,6 @@ public class TildaSlider extends FrameLayout implements ViewPager.OnPageChangeLi
         parseCustomAttributes(attrs);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public TildaSlider(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         parseCustomAttributes(attrs);
@@ -143,12 +140,7 @@ public class TildaSlider extends FrameLayout implements ViewPager.OnPageChangeLi
                 viewPager = new CustomViewPager(getContext(), mustMakeViewPagerWrapContent);
 //                viewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                    viewPager.setId(View.generateViewId());
-                } else {
-                    int id = Math.abs(new Random().nextInt((5000 - 1000) + 1) + 1000);
-                    viewPager.setId(id);
-                }
+                viewPager.setId(View.generateViewId());
                 viewPager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 viewPager.addOnPageChangeListener(TildaSlider.this);
                 addView(viewPager);
@@ -172,42 +164,26 @@ public class TildaSlider extends FrameLayout implements ViewPager.OnPageChangeLi
     public void setPosters(List<Poster> posters) {
         if (setupIsCalled) {
             this.posters = posters;
-
             for (int i = 0; i < posters.size(); i++) {
                 posters.get(i).setPosition(i);
                 posters.get(i).setOnPosterClickListener(onPosterClickListener);
-                posters.get(i).setOnTouchListener(new OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View view, MotionEvent motionEvent) {
-                        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                            stopTimer();
-                        } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                            setupTimer();
-                        }
-                        return false;
+                posters.get(i).setOnTouchListener((view, motionEvent) -> {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                        stopTimer();
+                    } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        setupTimer();
                     }
+                    return false;
                 });
                 slideIndicatorsGroup.onSlideAdd();
             }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                posterAdapter = new PosterAdapter(hostActivity.getSupportFragmentManager(), mustLoopSlides, getLayoutDirection(), posters);
-            } else {
-                posterAdapter = new PosterAdapter(hostActivity.getSupportFragmentManager(), mustLoopSlides, posters);
-            }
+            posterAdapter = new PosterAdapter(hostActivity.getSupportFragmentManager(), mustLoopSlides, getLayoutDirection(), posters);
             posterAdapter.setVideoPlayListener(this);
-
             viewPager.setAdapter(posterAdapter);
-
             if (mustLoopSlides) {
-                if (Build.VERSION.SDK_INT >= 17) {
-                    if (getLayoutDirection() == LAYOUT_DIRECTION_LTR) {
-                        viewPager.setCurrentItem(1, false);
-                        slideIndicatorsGroup.onSlideChange(0);
-                    } else {
-                        viewPager.setCurrentItem(posters.size(), false);
-                        slideIndicatorsGroup.onSlideChange(posters.size() - 1);
-                    }
+                if (getLayoutDirection() == LAYOUT_DIRECTION_LTR) {
+                    viewPager.setCurrentItem(1, false);
+                    slideIndicatorsGroup.onSlideChange(0);
                 } else {
                     viewPager.setCurrentItem(posters.size(), false);
                     slideIndicatorsGroup.onSlideChange(posters.size() - 1);
@@ -216,8 +192,6 @@ public class TildaSlider extends FrameLayout implements ViewPager.OnPageChangeLi
         } else {
             posterQueue.addAll(posters);
         }
-
-
     }
 
     private void setupTimer() {
@@ -226,26 +200,23 @@ public class TildaSlider extends FrameLayout implements ViewPager.OnPageChangeLi
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    ((AppCompatActivity) getContext()).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!mustLoopSlides) {
-                                if (viewPager.getCurrentItem() == posters.size() - 1) {
-                                    viewPager.setCurrentItem(0, true);
-                                } else {
-                                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-                                }
+                    ((AppCompatActivity) getContext()).runOnUiThread(() -> {
+                        if (!mustLoopSlides) {
+                            if (viewPager.getCurrentItem() == posters.size() - 1) {
+                                viewPager.setCurrentItem(0, true);
                             } else {
+                                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+                            }
+                        } else {
 
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                                    if (getLayoutDirection() == LAYOUT_DIRECTION_LTR) {
-                                        viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-                                    } else {
-                                        viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
-                                    }
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                                if (getLayoutDirection() == LAYOUT_DIRECTION_LTR) {
+                                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
                                 } else {
                                     viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
                                 }
+                            } else {
+                                viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
                             }
                         }
                     });
@@ -315,7 +286,6 @@ public class TildaSlider extends FrameLayout implements ViewPager.OnPageChangeLi
                 break;
         }
     }
-
 
     public void setOnPosterClickListener(OnPosterClickListener onPosterClickListener) {
         this.onPosterClickListener = onPosterClickListener;
@@ -524,7 +494,6 @@ public class TildaSlider extends FrameLayout implements ViewPager.OnPageChangeLi
         invalidate();
         requestLayout();
     }
-
 
     @Override
     public void onVideoStarted() {
